@@ -10,14 +10,14 @@ Richard.Hensley@du.edu
 
 ## Skills and Technologies  
 ### Languages:  
-Python: With three years of experience working with Python, I have worked on a variety of projects for analytical processes using several packages  
+**Python:** With three years of experience working with Python, I have worked on a variety of projects for analytical processes using several packages  
 * Packages: Numpy, Pandas, Matplot, Seaborn, and Pyomo  
 * Data manipulation with pandas and Numpy packages  
 * Random number simulation using Numpy and Pandas operators  
 * Data visualizations using Matplot and Pandas Data Frames  
 * Advanced optimization modeling using Pyomo, Pandas Data Frames, and Matplot visualizations  
 
-SQL: Two years of experience working with SQL for database creation and business reporting  
+**SQL:** Two years of experience working with SQL for database creation and business reporting  
 * Working in a variety of software, including Microsoft Access, Microsoft SQL Server, and  Visual Studios  
 * Database construction using sound business practices to ensure projects can be scaled  
 * Data Entry and Validation using SQL statements  
@@ -26,7 +26,7 @@ SQL: Two years of experience working with SQL for database creation and business
 * Creating a data warehouse to make comparisons using historical data  
 
 ### Software: 
-Microsoft Excel
+**Microsoft Excel**
 * Data entry and cleaning 
 * Descriptive Statistics and Significance testing using Data Analysis add-in 
 * Data visualization using Power Pivot
@@ -35,44 +35,44 @@ Microsoft Excel
 * Optimization model coding using Solver add-in
 * Social Network Diagraming using NodeXL add-in
   
-Microsoft Office Suite
+**Microsoft Office Suite**
 * Network Diagram design for project management
 * Certified in both Word and PowerPoint 
   
-Microsoft Access
+**Microsoft Access**
 * Database design 
 * Data entry using SQL
 * Data reporting to inform business decisions  
   
-Tableau 
+**Tableau**
 * Data visualization of extensive data sets to decern meaning from data
 * Dashboard creation to show data-driven insights that inform business decisions made by senior managers
    
-JMP Pro
+**JMP Pro**
 * Data manipulation and modeling using predictive modeling and machine learning tools
 * Model comparison using confusion matrixes
 * Model creation with different modeling tools, including Naive Bayesm K-Nearest Neighboor, Logistic regression, Decision Trees, and Neural Network models
 * Data visualization and model comparison
   
-Microsoft SQL Server
+**Microsoft SQL Server**
 * Database construction and data entry using SQL
 * Data-driven reporting using straightforward reporting techniques to inform project managers of data insights
 * Using ETL processes to go from a traditional OLTP database to a Datawarehouse
 * Using historical data in data warehouses to show trends and make data-driven business decisions
   
-Visual Studios  
+**Visual Studios**
 * Using nugget connection to integrate a Microsoft SQL Server database with a Windows Form application to show, describe, and add to the SQL Database
 * Using Extract Transfer and Load techniques to move data from a traditional database into a data warehouse
 
-Alteryx
+**Alteryx**
 * Text-based data analytics using Aleryx to perform sentiment analysis, topic modeling, data cleaning, and model creation to decern meaning from textual data
   
 ### Soft Skills:
-Project Management
+**Project Management**
 * Network Diagram to show project deliverables and pathway to success
 * Budget and Schedule simulations to make predictions and show available slack
   
-Communication
+**Communication**
 * Experienced in working in collaborative environments that encourage teamwork and a healthy team culture
   
 ## Projects
@@ -91,11 +91,15 @@ Then, create the data summary sheet with relevant descriptive statistics gathere
 
 **Technologies Used:** Python: Pandas, Matplotlib, and numpy packages  
 
-### R-studio Dashboard Project
-
-### Microsoft Access Project
-
 ### Peak Performance Data Base
+**Description of the project** Working in a team to design a membership tracking database for a hypothetical gym opening in the Denver Metro Area to learn about Data Warehousing techniques. Using an existing OLTP Database, we conducted an extract transfer and load program, using Visual Studios, to construct a new data mart to contain our data. Once the new data mart was created, we conducted multidimensional analysis using PowerPivot and PowerBI to visualize our data. 
 
+**Challenges:** This project was colabritive with a parter, and as such, we often shared files with new updates to our code. Keeping files organized and up to date with my Partner took up much of our time working on this project. This lead us to using a set format for file changes and specific locations in our main DM folder to keep things organiazed. 
+
+**Technologies Used:** Microsoft SQL Server, Visual Basics, PowerPivot, and PowerBI
 
 ## Education
+
+Undergraduate Student in Business Information Analytics at the Univeristy of Denver, expected graduation date: June 2024
+
+Relevant courses: Automating Business Processes, Foundations of Information Management, Data Mining and Visualization, Enterprise Information Management, Data Warehousing and Business Intelligence, Project Management and Simulation, Optimization Modeling, Complex Data Analytics
