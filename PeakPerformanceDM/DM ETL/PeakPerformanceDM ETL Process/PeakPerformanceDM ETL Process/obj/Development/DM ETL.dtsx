@@ -1,0 +1,2628 @@
+<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="10/25/2023 4:29:29 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="RICHARDSHP"
+  DTS:CreatorName="RICHARDSHP\r10he"
+  DTS:DTSID="{04D2BC65-D876-411F-9884-F177DCB6B8E6}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="16.0.5270.0"
+  DTS:LocaleID="1033"
+  DTS:ObjectName="Package"
+  DTS:PackageType="5"
+  DTS:VersionBuild="18"
+  DTS:VersionGUID="{1D40CA67-C369-4FCA-879E-6BBFC50A343F}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{7DFB4052-2CB6-44F4-808E-60F076A2E6BA}"
+      DTS:ObjectName="OLEDB_SQL_DPeakPerformanceDM">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=.;Initial Catalog=DPeakPerformanceDM;Provider=SQLNCLI11.1;Integrated Security=SSPI;Application Name=SSIS-Package-{7DFB4052-2CB6-44F4-808E-60F076A2E6BA}LocalHost.DPeakPerformanceDM;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[OLEDB_SQL_ProjectBase]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{ED3C40DF-6DCC-4D08-9199-A5DAAA4D07F1}"
+      DTS:ObjectName="OLEDB_SQL_ProjectBase">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=.;Initial Catalog=ProjectBase;Provider=SQLNCLI11.1;Integrated Security=SSPI;Application Name=SSIS-Package-{ED3C40DF-6DCC-4D08-9199-A5DAAA4D07F1}LocalHost.ProjectBase;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Load DM Tables"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{4801B224-612F-4B39-8478-80C8EC19E73F}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Load DM Tables">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Load DM Tables\Load DIM Date"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{35089185-C9EB-434E-B87C-927BCA62F086}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Load DIM Date"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{7DFB4052-2CB6-44F4-808E-60F076A2E6BA}"
+              SQLTask:SqlStatementSource="--Load DimDate adapted by Liang Lu for Data Warehousing course using several online resources. Adapted on Feb 11 2019. &#xA;--https://www.codeproject.com/Articles/647950/Create-and-Populate-Date-Dimension-for-Data-Wareho, &#xA;--https://ask.sqlservercentral.com/questions/112546/how-to-derive-season-in-a-date-dimension.html&#xA;--Modified by Christopher Pena&#xA;&#xA;--Change 'PrimoGoodsDM' to the name of your DataMart. &#xA;--When loading DimDate in Visual Studio, delete the last line 'SELECT * FROM [dbo].[DimDate]' at the end of the code. &#xA;--This line is used to check if you can successfully load DimDate in SQL and show you how Dimdate looks like. &#xA;USE DPeakPerformanceDM&#xA;--Specify Start Date and End date here,based on your business requirements&#xA;--Value of Start Date Must be Less than Your End Date &#xA;&#xA;DECLARE @StartDate DATETIME = '01/01/2015' --Starting value of Date Range&#xA;DECLARE @EndDate DATETIME = '12/31/2023' --End Value of Date Range&#xA;&#xA;--Temporary Variables To Hold the Values During Processing of Each Date of Year&#xA;DECLARE&#xA;&#x9;@DayOfWeekInMonth INT,&#xA;&#x9;@DayOfWeekInYear INT,&#xA;&#x9;@DayOfQuarter INT,&#xA;&#x9;@WeekOfMonth INT,&#xA;&#x9;@CurrentYear INT,&#xA;&#x9;@CurrentMonth INT,&#xA;&#x9;@CurrentQuarter INT&#xA;&#xA;/*Table Data type to store the day of week count for the month and year*/&#xA;DECLARE @DayOfWeek TABLE (DOW INT, MonthCount INT, QuarterCount INT, YearCount INT)&#xA;&#xA;INSERT INTO @DayOfWeek VALUES (1, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (2, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (3, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (4, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (5, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (6, 0, 0, 0)&#xA;INSERT INTO @DayOfWeek VALUES (7, 0, 0, 0)&#xA;&#xA;--Extract and assign various parts of Values from Current Date to Variable&#xA;&#xA;DECLARE @CurrentDate AS DATETIME = @StartDate&#xA;SET @CurrentMonth = DATEPART(MM, @CurrentDate)&#xA;SET @CurrentYear = DATEPART(YY, @CurrentDate)&#xA;SET @CurrentQuarter = DATEPART(QQ, @CurrentDate)&#xA;&#xA;/********************************************************************************************/&#xA;--Proceed only if Start Date(Current date ) is less than End date you specified above&#xA;&#xA;WHILE @CurrentDate &lt; @EndDate&#xA;BEGIN&#xA; &#xA;/*Begin day of week logic*/&#xA;&#xA;         /*Check for Change in Month of the Current date if Month changed then &#xA;          Change variable value*/&#xA;&#x9;IF @CurrentMonth != DATEPART(MM, @CurrentDate) &#xA;&#x9;BEGIN&#xA;&#x9;&#x9;UPDATE @DayOfWeek&#xA;&#x9;&#x9;SET MonthCount = 0&#xA;&#x9;&#x9;SET @CurrentMonth = DATEPART(MM, @CurrentDate)&#xA;&#x9;END&#xA;&#xA;        /* Check for Change in Quarter of the Current date if Quarter changed then change &#xA;         Variable value*/&#xA;&#xA;&#x9;IF @CurrentQuarter != DATEPART(QQ, @CurrentDate)&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;UPDATE @DayOfWeek&#xA;&#x9;&#x9;SET QuarterCount = 0&#xA;&#x9;&#x9;SET @CurrentQuarter = DATEPART(QQ, @CurrentDate)&#xA;&#x9;END&#xA;       &#xA;        /* Check for Change in Year of the Current date if Year changed then change &#xA;         Variable value*/&#xA;&#x9;&#xA;&#xA;&#x9;IF @CurrentYear != DATEPART(YY, @CurrentDate)&#xA;&#x9;BEGIN&#xA;&#x9;&#x9;UPDATE @DayOfWeek&#xA;&#x9;&#x9;SET YearCount = 0&#xA;&#x9;&#x9;SET @CurrentYear = DATEPART(YY, @CurrentDate)&#xA;&#x9;END&#xA;&#x9;&#xA;        -- Set values in table data type created above from variables &#xA;&#xA;&#x9;UPDATE @DayOfWeek&#xA;&#x9;SET &#xA;&#x9;&#x9;MonthCount = MonthCount + 1,&#xA;&#x9;&#x9;QuarterCount = QuarterCount + 1,&#xA;&#x9;&#x9;YearCount = YearCount + 1&#xA;&#x9;WHERE DOW = DATEPART(DW, @CurrentDate)&#xA;&#xA;&#x9;SELECT&#xA;&#x9;&#x9;@DayOfWeekInMonth = MonthCount,&#xA;&#x9;&#x9;@DayOfQuarter = QuarterCount,&#xA;&#x9;&#x9;@DayOfWeekInYear = YearCount&#xA;&#x9;FROM @DayOfWeek&#xA;&#x9;WHERE DOW = DATEPART(DW, @CurrentDate)&#xA;&#x9;&#xA;/*End day of week logic*/&#xA;&#xA;&#xA;/* Populate Your Dimension Table with values*/&#xA;&#x9;&#xA;&#x9;INSERT INTO [dbo].[DimDate]&#xA;&#x9;SELECT&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;CONVERT (char(8),@CurrentDate,112) as DateKey,&#xA;&#x9;&#x9;@CurrentDate AS Date,&#xA;&#x9;&#x9;CONVERT (char(10),@CurrentDate,101) as FullDateUSA,&#xA;&#x9;&#x9;DATEPART(DD, @CurrentDate) AS DayOfMonth,&#xA;&#x9;&#x9;DATENAME(DW, @CurrentDate) AS DayName,&#xA;&#x9;&#x9;DATEPART(DW, @CurrentDate) AS DayOfWeek,&#xA;&#x9;&#x9;@DayOfWeekInMonth AS DayOfWeekInMonth,&#xA;&#x9;&#x9;@DayOfWeekInYear AS DayOfWeekInYear,&#xA;&#x9;&#x9;@DayOfQuarter AS DayOfQuarter,&#xA;&#x9;&#x9;DATEPART(DY, @CurrentDate) AS DayOfYear,&#xA;&#x9;&#x9;DATEPART(WW, @CurrentDate) + 1 - DATEPART(WW, CONVERT(VARCHAR, &#xA;&#x9;&#x9;DATEPART(MM, @CurrentDate)) + '/1/' + CONVERT(VARCHAR, &#xA;&#x9;&#x9;DATEPART(YY, @CurrentDate))) AS WeekOfMonth,&#xA;&#x9;&#x9;(DATEDIFF(DD, DATEADD(QQ, DATEDIFF(QQ, 0, @CurrentDate), 0), &#xA;&#x9;&#x9;@CurrentDate) / 7) + 1 AS WeekOfQuarter,&#xA;&#x9;&#x9;DATEPART(WW, @CurrentDate) AS WeekOfYear,&#xA;&#x9;&#x9;DATEPART(MM, @CurrentDate) AS Month,&#xA;&#x9;&#x9;DATENAME(MM, @CurrentDate) AS MonthName,&#xA;&#x9;&#x9;CASE&#xA;&#x9;&#x9;&#x9;WHEN DATEPART(MM, @CurrentDate) IN (1, 4, 7, 10) THEN 1&#xA;&#x9;&#x9;&#x9;WHEN DATEPART(MM, @CurrentDate) IN (2, 5, 8, 11) THEN 2&#xA;&#x9;&#x9;&#x9;WHEN DATEPART(MM, @CurrentDate) IN (3, 6, 9, 12) THEN 3&#xA;&#x9;&#x9;&#x9;END AS MonthOfQuarter,&#xA;&#x9;&#x9;DATEPART(QQ, @CurrentDate) AS Quarter,&#xA;&#x9;&#x9;CASE DATEPART(QQ, @CurrentDate)&#xA;&#x9;&#x9;&#x9;WHEN 1 THEN 'First'&#xA;&#x9;&#x9;&#x9;WHEN 2 THEN 'Second'&#xA;&#x9;&#x9;&#x9;WHEN 3 THEN 'Third'&#xA;&#x9;&#x9;&#x9;WHEN 4 THEN 'Fourth'&#xA;&#x9;&#x9;&#x9;END AS QuarterName,&#xA;&#x9;&#x9;DATEPART(YEAR, @CurrentDate) AS Year,&#xA;&#x9;&#x9;'CY ' + CONVERT(VARCHAR, DATEPART(YEAR, @CurrentDate)) AS YearName,&#xA;&#x9;&#x9;LEFT(DATENAME(MM, @CurrentDate), 3) + '-' + CONVERT(VARCHAR, &#xA;&#x9;&#x9;DATEPART(YY, @CurrentDate)) AS MonthYear,&#xA;&#x9;&#x9;RIGHT('0' + CONVERT(VARCHAR, DATEPART(MM, @CurrentDate)),2) +&#xA;&#x9;&#x9;CONVERT(VARCHAR, DATEPART(YY, @CurrentDate)) AS MMYYYY,&#xA;&#x9;&#x9;CONVERT(DATETIME, CONVERT(DATE, DATEADD(DD, - (DATEPART(DD, &#xA;&#x9;&#x9;@CurrentDate) - 1), @CurrentDate))) AS FirstDayOfMonth,&#xA;&#x9;&#x9;CONVERT(DATETIME, CONVERT(DATE, DATEADD(DD, - (DATEPART(DD, &#xA;&#x9;&#x9;(DATEADD(MM, 1, @CurrentDate)))), DATEADD(MM, 1, &#xA;&#x9;&#x9;@CurrentDate)))) AS LastDayOfMonth,&#xA;&#x9;&#x9;DATEADD(QQ, DATEDIFF(QQ, 0, @CurrentDate), 0) AS FirstDayOfQuarter,&#xA;&#x9;&#x9;DATEADD(QQ, DATEDIFF(QQ, -1, @CurrentDate), -1) AS LastDayOfQuarter,&#xA;&#x9;&#x9;CONVERT(DATETIME, '01/01/' + CONVERT(VARCHAR, DATEPART(YY, &#xA;&#x9;&#x9;@CurrentDate))) AS FirstDayOfYear,&#xA;&#x9;&#x9;CONVERT(DATETIME, '12/31/' + CONVERT(VARCHAR, DATEPART(YY, &#xA;&#x9;&#x9;@CurrentDate))) AS LastDayOfYear,&#xA;&#x9;&#x9;NULL AS IsHolidayUSA,&#xA;&#x9;&#x9;CASE DATEPART(DW, @CurrentDate)&#xA;&#x9;&#x9;&#x9;WHEN 1 THEN 0&#xA;&#x9;&#x9;&#x9;WHEN 2 THEN 1&#xA;&#x9;&#x9;&#x9;WHEN 3 THEN 1&#xA;&#x9;&#x9;&#x9;WHEN 4 THEN 1&#xA;&#x9;&#x9;&#x9;WHEN 5 THEN 1&#xA;&#x9;&#x9;&#x9;WHEN 6 THEN 1&#xA;&#x9;&#x9;&#x9;WHEN 7 THEN 0&#xA;&#x9;&#x9;&#x9;END AS IsWeekday,&#xA;&#x9;&#x9;NULL AS Holiday, &#xA;&#x9;&#x9;    CASE&#xA;&#x9;&#x9;&#x9;WHEN DATEPART(MM, @CurrentDate) IN (12,1,2) THEN 'Winter'&#xA;&#x9;&#x9;&#x9;WHEN DATEPART(MM, @CurrentDate) IN (3,4,5) THEN 'Spring'&#xA;&#x9;&#x9;&#x9;WHEN DATEPART(MM, @CurrentDate) IN (6,7,8) THEN 'Summer'&#xA;&#x9;&#x9;&#x9;WHEN DATEPART(MM, @CurrentDate) IN (9,10,11) THEN 'Fall'&#xA;&#x9;&#x9;&#x9;END AS Season&#xA;&#xA;&#x9;SET @CurrentDate = DATEADD(DD, 1, @CurrentDate)&#xA;END&#xA;&#xA;&#xA;--Update Values of Holiday as per USA Govt. Declaration for National Holiday.&#xA;&#xA;/*Update HOLIDAY Field of USA In dimension*/&#xA;&#x9;&#xA; &#x9;/*THANKSGIVING - Fourth THURSDAY in November*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET Holiday = 'Thanksgiving Day'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 11 &#xA;&#x9;&#x9;AND [DayName] = 'Thursday' &#xA;&#x9;&#x9;AND DayOfWeekInMonth = 4&#xA;&#xA;&#x9;/*CHRISTMAS*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET Holiday = 'Christmas Day'&#xA;&#x9;&#x9;&#xA;&#x9;WHERE [Month] = 12 AND [DayOfMonth]  = 25&#xA;&#xA;&#x9;/*4th of July*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET Holiday = 'Independance Day'&#xA;&#x9;WHERE [Month] = 7 AND [DayOfMonth] = 4&#xA;&#xA;&#x9;/*New Years Day*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET Holiday = 'New Year''s Day'&#xA;&#x9;WHERE [Month] = 1 AND [DayOfMonth] = 1&#xA;&#xA;&#x9;/*Memorial Day - Last Monday in May*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET Holiday = 'Memorial Day'&#xA;&#x9;FROM [dbo].[DimDate]&#xA;&#x9;WHERE PurchaseDate IN &#xA;&#x9;&#x9;(&#xA;&#x9;&#x9;SELECT&#xA;&#x9;&#x9;&#x9;MAX(PurchaseDate)&#xA;&#x9;&#x9;FROM [dbo].[DimDate]&#xA;&#x9;&#x9;WHERE&#xA;&#x9;&#x9;&#x9;[MonthName] = 'May'&#xA;&#x9;&#x9;&#x9;AND [DayName]  = 'Monday'&#xA;&#x9;&#x9;GROUP BY&#xA;&#x9;&#x9;&#x9;[Year],&#xA;&#x9;&#x9;&#x9;[Month]&#xA;&#x9;&#x9;)&#xA;&#xA;&#x9;/*Labor Day - First Monday in September*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET Holiday = 'Labor Day'&#xA;&#x9;FROM [dbo].[DimDate]&#xA;&#x9;WHERE PurchaseDate IN &#xA;&#x9;&#x9;(&#xA;&#x9;&#x9;SELECT&#xA;&#x9;&#x9;&#x9;MIN(PurchaseDate)&#xA;&#x9;&#x9;FROM [dbo].[DimDate]&#xA;&#x9;&#x9;WHERE&#xA;&#x9;&#x9;&#x9;[MonthName] = 'September'&#xA;&#x9;&#x9;&#x9;AND [DayName] = 'Monday'&#xA;&#x9;&#x9;GROUP BY&#xA;&#x9;&#x9;&#x9;[Year],&#xA;&#x9;&#x9;&#x9;[Month]&#xA;&#x9;&#x9;)&#xA;&#xA;&#x9;/*Valentine's Day*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET Holiday = 'Valentine''s Day'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 2 &#xA;&#x9;&#x9;AND [DayOfMonth] = 14&#xA;&#xA;&#x9;/*Saint Patrick's Day*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET Holiday = 'Saint Patrick''s Day'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 3&#xA;&#x9;&#x9;AND [DayOfMonth] = 17&#xA;&#xA;&#x9;/*Martin Luthor King Day - Third Monday in January starting in 1983*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET Holiday = 'Martin Luthor King Jr Day'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 1&#xA;&#x9;&#x9;AND [DayName]  = 'Monday'&#xA;&#x9;&#x9;AND [Year] &gt;= 1983&#xA;&#x9;&#x9;AND DayOfWeekInMonth = 3&#xA;&#xA;&#x9;/*President's Day - Third Monday in February*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET Holiday = 'President''s Day'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 2&#xA;&#x9;&#x9;AND [DayName] = 'Monday'&#xA;&#x9;&#x9;AND DayOfWeekInMonth = 3&#xA;&#xA;&#x9;/*Mother's Day - Second Sunday of May*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET Holiday = 'Mother''s Day'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 5&#xA;&#x9;&#x9;AND [DayName] = 'Sunday'&#xA;&#x9;&#x9;AND DayOfWeekInMonth = 2&#xA;&#xA;&#x9;/*Father's Day - Third Sunday of June*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET Holiday = 'Father''s Day'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 6&#xA;&#x9;&#x9;AND [DayName] = 'Sunday'&#xA;&#x9;&#x9;AND DayOfWeekInMonth = 3&#xA;&#xA;&#x9;/*Halloween 10/31*/&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;SET Holiday = 'Halloween'&#xA;&#x9;WHERE&#xA;&#x9;&#x9;[Month] = 10&#xA;&#x9;&#x9;AND [DayOfMonth] = 31&#xA;&#xA;&#x9;/*Election Day - The first Tuesday after the first Monday in November*/&#xA;&#x9;BEGIN&#xA;&#x9;DECLARE @Holidays TABLE (ID INT IDENTITY(1,1), &#xA;&#x9;DateID int, Week TINYINT, YEAR CHAR(4), DAY CHAR(2))&#xA;&#xA;&#x9;&#x9;INSERT INTO @Holidays(DateID, [Year],[Day])&#xA;&#x9;&#x9;SELECT&#xA;&#x9;&#x9;&#x9;PurchaseDate,&#xA;&#x9;&#x9;&#x9;[Year],&#xA;&#x9;&#x9;&#x9;[DayOfMonth] &#xA;&#x9;&#x9;FROM [dbo].[DimDate]&#xA;&#x9;&#x9;WHERE&#xA;&#x9;&#x9;&#x9;[Month] = 11&#xA;&#x9;&#x9;&#x9;AND [DayName] = 'Monday'&#xA;&#x9;&#x9;ORDER BY&#xA;&#x9;&#x9;&#x9;YEAR,&#xA;&#x9;&#x9;&#x9;DayOfMonth &#xA;&#xA;&#x9;&#x9;DECLARE @CNTR INT, @POS INT, @STARTYEAR INT, @ENDYEAR INT, @MINDAY INT&#xA;&#xA;&#x9;&#x9;SELECT&#xA;&#x9;&#x9;&#x9;@CURRENTYEAR = MIN([Year])&#xA;&#x9;&#x9;&#x9;, @STARTYEAR = MIN([Year])&#xA;&#x9;&#x9;&#x9;, @ENDYEAR = MAX([Year])&#xA;&#x9;&#x9;FROM @Holidays&#xA;&#xA;&#x9;&#x9;WHILE @CURRENTYEAR &lt;= @ENDYEAR&#xA;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;SELECT @CNTR = COUNT([Year])&#xA;&#x9;&#x9;&#x9;FROM @Holidays&#xA;&#x9;&#x9;&#x9;WHERE [Year] = @CURRENTYEAR&#xA;&#xA;&#x9;&#x9;&#x9;SET @POS = 1&#xA;&#xA;&#x9;&#x9;&#x9;WHILE @POS &lt;= @CNTR&#xA;&#x9;&#x9;&#x9;BEGIN&#xA;&#x9;&#x9;&#x9;&#x9;SELECT @MINDAY = MIN(DAY)&#xA;&#x9;&#x9;&#x9;&#x9;FROM @Holidays&#xA;&#x9;&#x9;&#x9;&#x9;WHERE&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;[Year] = @CURRENTYEAR&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;AND [Week] IS NULL&#xA;&#xA;&#x9;&#x9;&#x9;&#x9;UPDATE @Holidays&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;SET [Week] = @POS&#xA;&#x9;&#x9;&#x9;&#x9;WHERE&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;[Year] = @CURRENTYEAR&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;AND [Day] = @MINDAY&#xA;&#xA;&#x9;&#x9;&#x9;&#x9;SELECT @POS = @POS + 1&#xA;&#x9;&#x9;&#x9;END&#xA;&#xA;&#x9;&#x9;&#x9;SELECT @CURRENTYEAR = @CURRENTYEAR + 1&#xA;&#x9;&#x9;END&#xA;&#xA;&#x9;&#x9;UPDATE [dbo].[DimDate]&#xA;&#x9;&#x9;&#x9;SET Holiday  = 'Election Day'&#x9;&#x9;&#x9;&#x9;&#xA;&#x9;&#x9;FROM [dbo].[DimDate] DT&#xA;&#x9;&#x9;&#x9;JOIN @Holidays HL ON (HL.DateID + 1) = DT.PurchaseDate&#xA;&#x9;&#x9;WHERE&#xA;&#x9;&#x9;&#x9;[Week] = 1&#xA;&#x9;END&#xA;&#x9;--set flag for USA holidays in Dimension&#xA;&#x9;UPDATE [dbo].[DimDate]&#xA;SET IsHoliday = CASE WHEN Holiday  IS NULL THEN 0 &#xA;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;WHEN Holiday  IS NOT NULL THEN 1 END&#xA;/*****************************************************************************************/&#xA;&#xA;--Show DimDate&#xA;--SELECT * FROM [dbo].[DimDate]" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Load DM Tables\Load DIM FitnessAdvisor"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Data Flow Task"
+          DTS:DTSID="{E179F736-5850-46A4-8DDC-51891D07E1CB}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Load DIM FitnessAdvisor"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <pipeline
+              version="1">
+              <components>
+                <component
+                  refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination"
+                  componentClassID="Microsoft.OLEDBDestination"
+                  contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+                  description="OLE DB Destination"
+                  name="OLE DB Destination"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property
+                      dataType="System.Int32"
+                      description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                      name="CommandTimeout">0</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the name of the database object used to open a rowset."
+                      name="OpenRowset">[dbo].[DimFitnessAdvisor]</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the variable that contains the name of the database object used to open a rowset."
+                      name="OpenRowsetVariable"></property>
+                    <property
+                      dataType="System.String"
+                      description="The SQL command to be executed."
+                      name="SqlCommand"
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the column code page to use when code page information is unavailable from the data source."
+                      name="DefaultCodePage">1252</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Forces the use of the DefaultCodePage property value when describing character data."
+                      name="AlwaysUseDefaultCodePage">false</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the mode used to access the database."
+                      name="AccessMode"
+                      typeConverter="AccessMode">0</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                      name="FastLoadKeepIdentity">false</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                      name="FastLoadKeepNulls">false</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                      name="FastLoadOptions"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                      name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      description="The OLE DB runtime connection used to access the database."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                      errorOrTruncationOperation="Insert"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="OLE DB Destination Input">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Advisor_AK]"
+                          cachedDataType="wstr"
+                          cachedLength="10"
+                          cachedName="Advisor_AK"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Advisor_AK]"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].Columns[Advisor_AK]" />
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[AdvisorFirstName]"
+                          cachedDataType="wstr"
+                          cachedLength="20"
+                          cachedName="AdvisorFirstName"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[AdvisorFirstName]"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].Columns[AdvisorFirstName]" />
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[AdvisorLastName]"
+                          cachedDataType="wstr"
+                          cachedLength="20"
+                          cachedName="AdvisorLastName"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[AdvisorLastName]"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].Columns[AdvisorLastName]" />
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[AdvisorAge]"
+                          cachedDataType="i4"
+                          cachedName="AdvisorAge"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[AdvisorAge]"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].Columns[AdvisorAge]" />
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[AdvisorGender]"
+                          cachedDataType="wstr"
+                          cachedLength="1"
+                          cachedName="AdvisorGender"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[AdvisorGender]"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].Columns[AdvisorGender]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Advisor_SK]"
+                          dataType="i4"
+                          name="Advisor_SK" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Advisor_AK]"
+                          dataType="i4"
+                          name="Advisor_AK" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[AdvisorFirstName]"
+                          dataType="wstr"
+                          length="100"
+                          name="AdvisorFirstName" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[AdvisorLastName]"
+                          dataType="wstr"
+                          length="100"
+                          name="AdvisorLastName" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[AdvisorAge]"
+                          dataType="i4"
+                          name="AdvisorAge" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[AdvisorGender]"
+                          dataType="wstr"
+                          length="7"
+                          name="AdvisorGender" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="OLE DB Destination Error Output"
+                      synchronousInputId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source"
+                  componentClassID="Microsoft.OLEDBSource"
+                  contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+                  description="OLE DB Source"
+                  name="OLE DB Source"
+                  usesDispositions="true"
+                  version="7">
+                  <properties>
+                    <property
+                      dataType="System.Int32"
+                      description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                      name="CommandTimeout">0</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the name of the database object used to open a rowset."
+                      name="OpenRowset"></property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the variable that contains the name of the database object used to open a rowset."
+                      name="OpenRowsetVariable"></property>
+                    <property
+                      dataType="System.String"
+                      description="The SQL command to be executed."
+                      name="SqlCommand"
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
+	ProjectBase.dbo.PERSONAL_TRAINER.TrainerID AS Advisor_AK, 
+	ProjectBase.dbo.PERSONAL_TRAINER.TrainerFirst AS AdvisorFirstName, 
+	ProjectBase.dbo.PERSONAL_TRAINER.TrainerLast AS AdvisorLastName, 
+	ProjectBase.dbo.PERSONAL_TRAINER.TrainerAge AS AdvisorAge,
+	ProjectBase.dbo.PERSONAL_TRAINER.TrainerGender AS AdvisorGender
+FROM 
+	ProjectBase.dbo.PERSONAL_TRAINER</property>
+                    <property
+                      dataType="System.String"
+                      description="The variable that contains the SQL command to be executed."
+                      name="SqlCommandVariable"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the column code page to use when code page information is unavailable from the data source."
+                      name="DefaultCodePage">1252</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Forces the use of the DefaultCodePage property value when describing character data."
+                      name="AlwaysUseDefaultCodePage">false</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the mode used to access the database."
+                      name="AccessMode"
+                      typeConverter="AccessMode">2</property>
+                    <property
+                      dataType="System.String"
+                      description="The mappings between the parameters in the SQL command and variables."
+                      name="ParameterMapping"></property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_SQL_ProjectBase]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_SQL_ProjectBase]"
+                      description="The OLE DB runtime connection used to access the database."
+                      name="OleDbConnection" />
+                  </connections>
+                  <outputs>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output]"
+                      name="OLE DB Source Output">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].Columns[Advisor_AK]"
+                          dataType="wstr"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Advisor_AK]"
+                          length="10"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].Columns[Advisor_AK]"
+                          name="Advisor_AK"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].Columns[AdvisorFirstName]"
+                          dataType="wstr"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[AdvisorFirstName]"
+                          length="20"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].Columns[AdvisorFirstName]"
+                          name="AdvisorFirstName"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].Columns[AdvisorLastName]"
+                          dataType="wstr"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[AdvisorLastName]"
+                          length="20"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].Columns[AdvisorLastName]"
+                          name="AdvisorLastName"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].Columns[AdvisorAge]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[AdvisorAge]"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].Columns[AdvisorAge]"
+                          name="AdvisorAge"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].Columns[AdvisorGender]"
+                          dataType="wstr"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[AdvisorGender]"
+                          length="1"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].Columns[AdvisorGender]"
+                          name="AdvisorGender"
+                          truncationRowDisposition="FailComponent" />
+                      </outputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Advisor_AK]"
+                          dataType="wstr"
+                          length="10"
+                          name="Advisor_AK" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[AdvisorFirstName]"
+                          dataType="wstr"
+                          length="20"
+                          name="AdvisorFirstName" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[AdvisorLastName]"
+                          dataType="wstr"
+                          length="20"
+                          name="AdvisorLastName" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[AdvisorAge]"
+                          dataType="i4"
+                          name="AdvisorAge" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[AdvisorGender]"
+                          dataType="wstr"
+                          length="1"
+                          name="AdvisorGender" />
+                      </externalMetadataColumns>
+                    </output>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                      isErrorOut="true"
+                      name="OLE DB Source Error Output">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Advisor_AK]"
+                          dataType="wstr"
+                          length="10"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Advisor_AK]"
+                          name="Advisor_AK" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[AdvisorFirstName]"
+                          dataType="wstr"
+                          length="20"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[AdvisorFirstName]"
+                          name="AdvisorFirstName" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[AdvisorLastName]"
+                          dataType="wstr"
+                          length="20"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[AdvisorLastName]"
+                          name="AdvisorLastName" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[AdvisorAge]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[AdvisorAge]"
+                          name="AdvisorAge" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[AdvisorGender]"
+                          dataType="wstr"
+                          length="1"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[AdvisorGender]"
+                          name="AdvisorGender" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+              </components>
+              <paths>
+                <path
+                  refId="Package\Load DM Tables\Load DIM FitnessAdvisor.Paths[OLE DB Source Output]"
+                  endId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  name="OLE DB Source Output"
+                  startId="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source.Outputs[OLE DB Source Output]" />
+              </paths>
+            </pipeline>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Load DM Tables\Load DIM Member"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Data Flow Task"
+          DTS:DTSID="{ACCB756E-3376-40D8-A6FF-CE726D1BD949}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Load DIM Member"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <pipeline
+              version="1">
+              <components>
+                <component
+                  refId="Package\Load DM Tables\Load DIM Member\Insert Destination"
+                  componentClassID="Microsoft.OLEDBDestination"
+                  contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+                  description="OLE DB Destination"
+                  name="Insert Destination"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property
+                      dataType="System.Int32"
+                      description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                      name="CommandTimeout">0</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the name of the database object used to open a rowset."
+                      name="OpenRowset">[dbo].[DimMember]</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the variable that contains the name of the database object used to open a rowset."
+                      name="OpenRowsetVariable"></property>
+                    <property
+                      dataType="System.String"
+                      description="The SQL command to be executed."
+                      name="SqlCommand"
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the column code page to use when code page information is unavailable from the data source."
+                      name="DefaultCodePage">1252</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Forces the use of the DefaultCodePage property value when describing character data."
+                      name="AlwaysUseDefaultCodePage">false</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the mode used to access the database."
+                      name="AccessMode"
+                      typeConverter="AccessMode">0</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                      name="FastLoadKeepIdentity">false</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                      name="FastLoadKeepNulls">false</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                      name="FastLoadOptions"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                      name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      description="The OLE DB runtime connection used to access the database."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input]"
+                      errorOrTruncationOperation="Insert"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="OLE DB Destination Input">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].Columns[Member_AK]"
+                          cachedDataType="i4"
+                          cachedName="Member_AK"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[Member_AK]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[Member_AK]" />
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].Columns[MemberFirstName]"
+                          cachedDataType="wstr"
+                          cachedLength="25"
+                          cachedName="MemberFirstName"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[MemberFirstName]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberFirstName]" />
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].Columns[MemberLastName]"
+                          cachedDataType="wstr"
+                          cachedLength="25"
+                          cachedName="MemberLastName"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[MemberLastName]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberLastName]" />
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].Columns[MemberGender]"
+                          cachedDataType="wstr"
+                          cachedLength="1"
+                          cachedName="MemberGender"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[MemberGender]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberGender]" />
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].Columns[MemberAge]"
+                          cachedDataType="i4"
+                          cachedName="MemberAge"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[MemberAge]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberAge]" />
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].Columns[IsStudent]"
+                          cachedDataType="i4"
+                          cachedName="IsStudent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[IsStudent]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[IsStudent]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[Member_SK]"
+                          dataType="i4"
+                          name="Member_SK" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[Member_AK]"
+                          dataType="i4"
+                          name="Member_AK" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[MemberFirstName]"
+                          dataType="wstr"
+                          length="100"
+                          name="MemberFirstName" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[MemberLastName]"
+                          dataType="wstr"
+                          length="100"
+                          name="MemberLastName" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[MemberGender]"
+                          dataType="wstr"
+                          length="7"
+                          name="MemberGender" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[MemberAge]"
+                          dataType="i4"
+                          name="MemberAge" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input].ExternalColumns[IsStudent]"
+                          dataType="i4"
+                          name="IsStudent" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Outputs[OLE DB Destination Error Output]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="OLE DB Destination Error Output"
+                      synchronousInputId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM Member\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM Member\Insert Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\Load DM Tables\Load DIM Member\OLE DB Command"
+                  componentClassID="Microsoft.OLEDBCommand"
+                  contactInfo="OLE DB Command;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;2"
+                  description="Runs an SQL statement for each row in a data flow. For example, call a 'new employee setup' stored procedure for each row in the 'new employees' table. Note: running an SQL statement for each row of a large data flow may take a long time."
+                  name="OLE DB Command"
+                  usesDispositions="true"
+                  version="2">
+                  <properties>
+                    <property
+                      dataType="System.Int32"
+                      description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                      name="CommandTimeout">0</property>
+                    <property
+                      dataType="System.String"
+                      description="The SQL command to be executed."
+                      expressionType="Notify"
+                      name="SqlCommand"
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">UPDATE [dbo].[DimMember] SET [MemberLastName] = ? WHERE [Member_AK] = ?</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the column code page to use when code page information is unavailable from the data source."
+                      name="DefaultCodePage">1252</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      description="The OLE DB runtime connection used to access the database."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Inputs[OLE DB Command Input]"
+                      errorOrTruncationOperation="Command Execution"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="OLE DB Command Input">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Inputs[OLE DB Command Input].Columns[Member_AK]"
+                          cachedDataType="i4"
+                          cachedName="Member_AK"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[Member_AK]" />
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Inputs[OLE DB Command Input].Columns[MemberLastName]"
+                          cachedDataType="wstr"
+                          cachedLength="25"
+                          cachedName="MemberLastName"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberLastName]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_0]"
+                          dataType="wstr"
+                          length="100"
+                          name="Param_0">
+                          <properties>
+                            <property
+                              dataType="System.Int32"
+                              description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                              name="DBParamInfoFlags">65</property>
+                          </properties>
+                        </externalMetadataColumn>
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Inputs[OLE DB Command Input].ExternalColumns[Param_1]"
+                          dataType="i4"
+                          name="Param_1">
+                          <properties>
+                            <property
+                              dataType="System.Int32"
+                              description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values."
+                              name="DBParamInfoFlags">81</property>
+                          </properties>
+                        </externalMetadataColumn>
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Outputs[OLE DB Command Output]"
+                      exclusionGroup="1"
+                      name="OLE DB Command Output"
+                      synchronousInputId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Inputs[OLE DB Command Input]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Outputs[OLE DB Command Error Output]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="OLE DB Command Error Output"
+                      synchronousInputId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Inputs[OLE DB Command Input]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Outputs[OLE DB Command Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\Load DM Tables\Load DIM Member\OLE DB Source"
+                  componentClassID="Microsoft.OLEDBSource"
+                  contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+                  description="OLE DB Source"
+                  name="OLE DB Source"
+                  usesDispositions="true"
+                  version="7">
+                  <properties>
+                    <property
+                      dataType="System.Int32"
+                      description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                      name="CommandTimeout">0</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the name of the database object used to open a rowset."
+                      name="OpenRowset"></property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the variable that contains the name of the database object used to open a rowset."
+                      name="OpenRowsetVariable"></property>
+                    <property
+                      dataType="System.String"
+                      description="The SQL command to be executed."
+                      name="SqlCommand"
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">--Here is the code for the DimCustomer table in the PrimoGoods DM
+
+SELECT 
+	ProjectBase.dbo.MEMBER.MemberID AS Member_AK, 
+	ProjectBase.dbo.MEMBER.MemberFirst AS MemberFirstName,
+	ProjectBase.dbo.MEMBER.MemberLast AS MemberLastName,
+	ProjectBase.dbo.MEMBER.Gender AS MemberGender,
+	ProjectBase.dbo.MEMBER.MemberAge AS MemberAge,
+	ProjectBase.dbo.MEMBER.IsStudent 
+FROM
+	ProjectBase.dbo.Member</property>
+                    <property
+                      dataType="System.String"
+                      description="The variable that contains the SQL command to be executed."
+                      name="SqlCommandVariable"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the column code page to use when code page information is unavailable from the data source."
+                      name="DefaultCodePage">1252</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Forces the use of the DefaultCodePage property value when describing character data."
+                      name="AlwaysUseDefaultCodePage">false</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the mode used to access the database."
+                      name="AccessMode"
+                      typeConverter="AccessMode">2</property>
+                    <property
+                      dataType="System.String"
+                      description="The mappings between the parameters in the SQL command and variables."
+                      name="ParameterMapping"></property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      description="The OLE DB runtime connection used to access the database."
+                      name="OleDbConnection" />
+                  </connections>
+                  <outputs>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output]"
+                      name="OLE DB Source Output">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[Member_AK]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Member_AK]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[Member_AK]"
+                          name="Member_AK"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberFirstName]"
+                          dataType="wstr"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[MemberFirstName]"
+                          length="25"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberFirstName]"
+                          name="MemberFirstName"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberLastName]"
+                          dataType="wstr"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[MemberLastName]"
+                          length="25"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberLastName]"
+                          name="MemberLastName"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberGender]"
+                          dataType="wstr"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[MemberGender]"
+                          length="1"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberGender]"
+                          name="MemberGender"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberAge]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[MemberAge]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberAge]"
+                          name="MemberAge"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[IsStudent]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[IsStudent]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[IsStudent]"
+                          name="IsStudent"
+                          truncationRowDisposition="FailComponent" />
+                      </outputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Member_AK]"
+                          dataType="i4"
+                          name="Member_AK" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[MemberFirstName]"
+                          dataType="wstr"
+                          length="25"
+                          name="MemberFirstName" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[MemberLastName]"
+                          dataType="wstr"
+                          length="25"
+                          name="MemberLastName" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[MemberGender]"
+                          dataType="wstr"
+                          length="1"
+                          name="MemberGender" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[MemberAge]"
+                          dataType="i4"
+                          name="MemberAge" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[IsStudent]"
+                          dataType="i4"
+                          name="IsStudent" />
+                      </externalMetadataColumns>
+                    </output>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                      isErrorOut="true"
+                      name="OLE DB Source Error Output">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Member_AK]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Member_AK]"
+                          name="Member_AK" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[MemberFirstName]"
+                          dataType="wstr"
+                          length="25"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[MemberFirstName]"
+                          name="MemberFirstName" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[MemberLastName]"
+                          dataType="wstr"
+                          length="25"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[MemberLastName]"
+                          name="MemberLastName" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[MemberGender]"
+                          dataType="wstr"
+                          length="1"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[MemberGender]"
+                          name="MemberGender" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[MemberAge]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[MemberAge]"
+                          name="MemberAge" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[IsStudent]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[IsStudent]"
+                          name="IsStudent" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension"
+                  componentClassID="Microsoft.SCD"
+                  contactInfo="Slowly Changing Dimension;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;3"
+                  description="Updates a SQL Server Analysis Services data warehouse dimension. Update dimension records that are already present and  insert dimension records that aren't. For example, update the DimProduct table of the AdventureWorksDW OLAP database with data from the Products table in the AdventureWorks OLTP database."
+                  name="Slowly Changing Dimension"
+                  version="3">
+                  <properties>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the SELECT statement used to create a schema rowset."
+                      name="SqlCommand"
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT [IsStudent], [Member_AK], [MemberAge], [MemberFirstName], [MemberGender], [MemberLastName] FROM [dbo].[DimMember]</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the WHERE clause in the SELECT statement that selects the current row among rows with identical business keys."
+                      name="CurrentRowWhere"></property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether historical attribute updates are directed to the transformation output for changing attribute updates."
+                      name="UpdateChangingAttributeHistory">false</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the transformation fails when columns with fixed attributes contain changes."
+                      name="FailOnFixedAttributeChange">false</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the column name for the inferred member."
+                      name="InferredMemberIndicator"></property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether inferred member updates are detected."
+                      name="EnableInferredMember">false</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the transformation fails when a lookup of an existing record fails."
+                      name="FailOnLookupFailure">false</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies that all rows in the input are new or the transformation detects the change type."
+                      name="IncomingRowChangeType"
+                      typeConverter="IncomingRowChangeType">1</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the column code page to use when code page information is unavailable from the data source."
+                      name="DefaultCodePage">1252</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Connections[LookupConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      description="Defines the connection to use for lookups in the dimension table"
+                      name="LookupConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]"
+                      name="Slowly Changing Dimension Input">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].Columns[IsStudent]"
+                          cachedDataType="i4"
+                          cachedName="IsStudent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[IsStudent]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[IsStudent]">
+                          <properties>
+                            <property
+                              dataType="System.Int32"
+                              name="ColumnType"
+                              typeConverter="ColumnType">4</property>
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].Columns[Member_AK]"
+                          cachedDataType="i4"
+                          cachedName="Member_AK"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[Member_AK]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[Member_AK]">
+                          <properties>
+                            <property
+                              dataType="System.Int32"
+                              name="ColumnType"
+                              typeConverter="ColumnType">1</property>
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].Columns[MemberAge]"
+                          cachedDataType="i4"
+                          cachedName="MemberAge"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[MemberAge]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberAge]">
+                          <properties>
+                            <property
+                              dataType="System.Int32"
+                              name="ColumnType"
+                              typeConverter="ColumnType">4</property>
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].Columns[MemberFirstName]"
+                          cachedDataType="wstr"
+                          cachedLength="25"
+                          cachedName="MemberFirstName"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[MemberFirstName]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberFirstName]">
+                          <properties>
+                            <property
+                              dataType="System.Int32"
+                              name="ColumnType"
+                              typeConverter="ColumnType">4</property>
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].Columns[MemberGender]"
+                          cachedDataType="wstr"
+                          cachedLength="1"
+                          cachedName="MemberGender"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[MemberGender]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberGender]">
+                          <properties>
+                            <property
+                              dataType="System.Int32"
+                              name="ColumnType"
+                              typeConverter="ColumnType">4</property>
+                          </properties>
+                        </inputColumn>
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].Columns[MemberLastName]"
+                          cachedDataType="wstr"
+                          cachedLength="25"
+                          cachedName="MemberLastName"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[MemberLastName]"
+                          lineageId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberLastName]">
+                          <properties>
+                            <property
+                              dataType="System.Int32"
+                              name="ColumnType"
+                              typeConverter="ColumnType">2</property>
+                          </properties>
+                        </inputColumn>
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[IsStudent]"
+                          dataType="i4"
+                          name="IsStudent" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[Member_AK]"
+                          dataType="i4"
+                          name="Member_AK" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[MemberAge]"
+                          dataType="i4"
+                          name="MemberAge" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[MemberFirstName]"
+                          dataType="wstr"
+                          length="100"
+                          name="MemberFirstName" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[MemberGender]"
+                          dataType="wstr"
+                          length="7"
+                          name="MemberGender" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input].ExternalColumns[MemberLastName]"
+                          dataType="wstr"
+                          length="100"
+                          name="MemberLastName" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Outputs[Unchanged Output]"
+                      description="Unchanged rows"
+                      exclusionGroup="1"
+                      name="Unchanged Output"
+                      synchronousInputId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Outputs[New Output]"
+                      description="New rows"
+                      exclusionGroup="1"
+                      name="New Output"
+                      synchronousInputId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Outputs[Fixed Attribute Output]"
+                      description="Rows with changes in columns tagged FixedAttribute"
+                      exclusionGroup="1"
+                      name="Fixed Attribute Output"
+                      synchronousInputId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Outputs[Changing Attribute Updates Output]"
+                      description="These rows contain new information for ChangingAttribute (Type 1) column changes"
+                      exclusionGroup="1"
+                      name="Changing Attribute Updates Output"
+                      synchronousInputId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Outputs[Historical Attribute Inserts Output]"
+                      description="HistoricalAttribute (Type 2) changes result in these new rows"
+                      exclusionGroup="2"
+                      name="Historical Attribute Inserts Output"
+                      synchronousInputId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Outputs[Inferred Member Updates Output]"
+                      description="Information to update unpopulated initial dimension row"
+                      exclusionGroup="1"
+                      name="Inferred Member Updates Output"
+                      synchronousInputId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]">
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+              </components>
+              <paths>
+                <path
+                  refId="Package\Load DM Tables\Load DIM Member.Paths[Changing Attribute Updates Output]"
+                  endId="Package\Load DM Tables\Load DIM Member\OLE DB Command.Inputs[OLE DB Command Input]"
+                  name="Changing Attribute Updates Output"
+                  startId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Outputs[Changing Attribute Updates Output]" />
+                <path
+                  refId="Package\Load DM Tables\Load DIM Member.Paths[New Output]"
+                  endId="Package\Load DM Tables\Load DIM Member\Insert Destination.Inputs[OLE DB Destination Input]"
+                  name="New Output"
+                  startId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Outputs[New Output]" />
+                <path
+                  refId="Package\Load DM Tables\Load DIM Member.Paths[OLE DB Source Output]"
+                  endId="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension.Inputs[Slowly Changing Dimension Input]"
+                  name="OLE DB Source Output"
+                  startId="Package\Load DM Tables\Load DIM Member\OLE DB Source.Outputs[OLE DB Source Output]" />
+              </paths>
+            </pipeline>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Load DM Tables\Load DIM Membership"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Data Flow Task"
+          DTS:DTSID="{BE87C440-B95F-4AE8-9D70-6EB58D20A8D6}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Load DIM Membership"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <pipeline
+              version="1">
+              <components>
+                <component
+                  refId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination"
+                  componentClassID="Microsoft.OLEDBDestination"
+                  contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+                  description="OLE DB Destination"
+                  name="OLE DB Destination"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property
+                      dataType="System.Int32"
+                      description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                      name="CommandTimeout">0</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the name of the database object used to open a rowset."
+                      name="OpenRowset">[dbo].[DimMembership]</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the variable that contains the name of the database object used to open a rowset."
+                      name="OpenRowsetVariable"></property>
+                    <property
+                      dataType="System.String"
+                      description="The SQL command to be executed."
+                      name="SqlCommand"
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the column code page to use when code page information is unavailable from the data source."
+                      name="DefaultCodePage">1252</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Forces the use of the DefaultCodePage property value when describing character data."
+                      name="AlwaysUseDefaultCodePage">false</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the mode used to access the database."
+                      name="AccessMode"
+                      typeConverter="AccessMode">0</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                      name="FastLoadKeepIdentity">false</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                      name="FastLoadKeepNulls">false</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                      name="FastLoadOptions"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                      name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      description="The OLE DB runtime connection used to access the database."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                      errorOrTruncationOperation="Insert"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="OLE DB Destination Input">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Membership_AK]"
+                          cachedDataType="wstr"
+                          cachedLength="10"
+                          cachedName="Membership_AK"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Membership_AK]"
+                          lineageId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output].Columns[Membership_AK]" />
+                        <inputColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[MembershipType]"
+                          cachedDataType="wstr"
+                          cachedLength="20"
+                          cachedName="MembershipType"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[MembershipType]"
+                          lineageId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output].Columns[MembershipType]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Membership_SK]"
+                          dataType="i4"
+                          name="Membership_SK" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Membership_AK]"
+                          dataType="i4"
+                          name="Membership_AK" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[MembershipType]"
+                          dataType="wstr"
+                          length="20"
+                          name="MembershipType" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[MembershipCost]"
+                          dataType="cy"
+                          name="MembershipCost" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="OLE DB Destination Error Output"
+                      synchronousInputId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Inputs[OLE DB Destination Input]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\Load DM Tables\Load DIM Membership\OLE DB Source"
+                  componentClassID="Microsoft.OLEDBSource"
+                  contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+                  description="OLE DB Source"
+                  name="OLE DB Source"
+                  usesDispositions="true"
+                  version="7">
+                  <properties>
+                    <property
+                      dataType="System.Int32"
+                      description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                      name="CommandTimeout">0</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the name of the database object used to open a rowset."
+                      name="OpenRowset"></property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the variable that contains the name of the database object used to open a rowset."
+                      name="OpenRowsetVariable"></property>
+                    <property
+                      dataType="System.String"
+                      description="The SQL command to be executed."
+                      name="SqlCommand"
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
+	ProjectBase.dbo.MEBERSHIP_TYPE.MembershipTypeID AS Membership_AK,
+	ProjectBase.dbo.MEBERSHIP_TYPE.TypeName AS MembershipType,
+	ProjectBase.dbo.MEBERSHIP_TYPE.TypeCost AS MemberShipCost
+	--ProjectBase.dbo.SIGNUPS.TransactionDate AS MembershipJoinedDate,
+	--ProjectBase.dbo.SIGNUPS.IsRenewal 
+FROM 
+	ProjectBase.dbo.MEBERSHIP_TYPE
+--INNER JOIN 
+--	ProjectBase.dbo.SIGNUPS
+--ON 
+--	ProjectBase.dbo.SIGNUPS.MembershipTypeID = ProjectBase.dbo.MEBERSHIP_TYPE.MembershipTypeID</property>
+                    <property
+                      dataType="System.String"
+                      description="The variable that contains the SQL command to be executed."
+                      name="SqlCommandVariable"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the column code page to use when code page information is unavailable from the data source."
+                      name="DefaultCodePage">1252</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Forces the use of the DefaultCodePage property value when describing character data."
+                      name="AlwaysUseDefaultCodePage">false</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the mode used to access the database."
+                      name="AccessMode"
+                      typeConverter="AccessMode">2</property>
+                    <property
+                      dataType="System.String"
+                      description="The mappings between the parameters in the SQL command and variables."
+                      name="ParameterMapping"></property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      description="The OLE DB runtime connection used to access the database."
+                      name="OleDbConnection" />
+                  </connections>
+                  <outputs>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output]"
+                      name="OLE DB Source Output">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output].Columns[Membership_AK]"
+                          dataType="wstr"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Membership_AK]"
+                          length="10"
+                          lineageId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output].Columns[Membership_AK]"
+                          name="Membership_AK"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output].Columns[MembershipType]"
+                          dataType="wstr"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[MembershipType]"
+                          length="20"
+                          lineageId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output].Columns[MembershipType]"
+                          name="MembershipType"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberShipCost]"
+                          dataType="cy"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[MemberShipCost]"
+                          lineageId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberShipCost]"
+                          name="MemberShipCost"
+                          truncationRowDisposition="FailComponent" />
+                      </outputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Membership_AK]"
+                          dataType="wstr"
+                          length="10"
+                          name="Membership_AK" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[MembershipType]"
+                          dataType="wstr"
+                          length="20"
+                          name="MembershipType" />
+                        <externalMetadataColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[MemberShipCost]"
+                          dataType="cy"
+                          name="MemberShipCost" />
+                      </externalMetadataColumns>
+                    </output>
+                    <output
+                      refId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                      isErrorOut="true"
+                      name="OLE DB Source Error Output">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Membership_AK]"
+                          dataType="wstr"
+                          length="10"
+                          lineageId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Membership_AK]"
+                          name="Membership_AK" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[MembershipType]"
+                          dataType="wstr"
+                          length="20"
+                          lineageId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[MembershipType]"
+                          name="MembershipType" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[MemberShipCost]"
+                          dataType="cy"
+                          lineageId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[MemberShipCost]"
+                          name="MemberShipCost" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+              </components>
+              <paths>
+                <path
+                  refId="Package\Load DM Tables\Load DIM Membership.Paths[OLE DB Source Output]"
+                  endId="Package\Load DM Tables\Load DIM Membership\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  name="OLE DB Source Output"
+                  startId="Package\Load DM Tables\Load DIM Membership\OLE DB Source.Outputs[OLE DB Source Output]" />
+              </paths>
+            </pipeline>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Load DM Tables.PrecedenceConstraints[Constraint]"
+          DTS:CreationName=""
+          DTS:DTSID="{F0E049C5-7BC5-45F2-B567-E5DF0A992E05}"
+          DTS:From="Package\Load DM Tables\Load DIM Date"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint"
+          DTS:To="Package\Load DM Tables\Load DIM FitnessAdvisor" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Load DM Tables.PrecedenceConstraints[Constraint 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{E9A3BF88-88FE-425E-957F-2DD251085764}"
+          DTS:From="Package\Load DM Tables\Load DIM FitnessAdvisor"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 1"
+          DTS:To="Package\Load DM Tables\Load DIM Member" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Load DM Tables.PrecedenceConstraints[Constraint 2]"
+          DTS:CreationName=""
+          DTS:DTSID="{949DEAA1-64D3-45D6-B00E-E5425C7761D3}"
+          DTS:From="Package\Load DM Tables\Load DIM Member"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 2"
+          DTS:To="Package\Load DM Tables\Load DIM Membership" />
+      </DTS:PrecedenceConstraints>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Load Fact Table"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{F6C0666F-C6F7-4C46-8848-AD40CCE5CAD7}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Load Fact Table">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Load Fact Table\Load FactMembershipPurchase"
+          DTS:CreationName="Microsoft.Pipeline"
+          DTS:Description="Data Flow Task"
+          DTS:DTSID="{D1DD4793-D8CF-4040-A3B1-C786E6E688BD}"
+          DTS:ExecutableType="Microsoft.Pipeline"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Load FactMembershipPurchase"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <pipeline
+              version="1">
+              <components>
+                <component
+                  refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination"
+                  componentClassID="Microsoft.OLEDBDestination"
+                  contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+                  description="OLE DB Destination"
+                  name="OLE DB Destination"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property
+                      dataType="System.Int32"
+                      description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                      name="CommandTimeout">0</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the name of the database object used to open a rowset."
+                      name="OpenRowset">[dbo].[FactMembershipPurchase]</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the variable that contains the name of the database object used to open a rowset."
+                      name="OpenRowsetVariable"></property>
+                    <property
+                      dataType="System.String"
+                      description="The SQL command to be executed."
+                      name="SqlCommand"
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the column code page to use when code page information is unavailable from the data source."
+                      name="DefaultCodePage">1252</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Forces the use of the DefaultCodePage property value when describing character data."
+                      name="AlwaysUseDefaultCodePage">false</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the mode used to access the database."
+                      name="AccessMode"
+                      typeConverter="AccessMode">0</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                      name="FastLoadKeepIdentity">false</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                      name="FastLoadKeepNulls">false</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                      name="FastLoadOptions"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                      name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_SQL_DPeakPerformanceDM]"
+                      description="The OLE DB runtime connection used to access the database."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                      errorOrTruncationOperation="Insert"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="OLE DB Destination Input">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[TransactionID]"
+                          cachedDataType="i4"
+                          cachedName="TransactionID"
+                          externalMetadataColumnId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[TransactionID]"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[TransactionID]" />
+                        <inputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[TransactionFee]"
+                          cachedDataType="cy"
+                          cachedName="TransactionFee"
+                          externalMetadataColumnId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[TransactionFee]"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[TransactionFee]" />
+                        <inputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Member_SK]"
+                          cachedDataType="i4"
+                          cachedName="Member_SK"
+                          externalMetadataColumnId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Member_SK]"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[Member_SK]" />
+                        <inputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Membership_SK]"
+                          cachedDataType="i4"
+                          cachedName="Membership_SK"
+                          externalMetadataColumnId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Membership_SK]"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[Membership_SK]" />
+                        <inputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Advisor_SK]"
+                          cachedDataType="i4"
+                          cachedName="Advisor_SK"
+                          externalMetadataColumnId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Advisor_SK]"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[Advisor_SK]" />
+                        <inputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[TransactionDate]"
+                          cachedDataType="i4"
+                          cachedName="TransactionDate"
+                          externalMetadataColumnId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[PurchaseDate]"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[TransactionDate]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Member_SK]"
+                          dataType="i4"
+                          name="Member_SK" />
+                        <externalMetadataColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Membership_SK]"
+                          dataType="i4"
+                          name="Membership_SK" />
+                        <externalMetadataColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Advisor_SK]"
+                          dataType="i4"
+                          name="Advisor_SK" />
+                        <externalMetadataColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[PurchaseDate]"
+                          dataType="i4"
+                          name="PurchaseDate" />
+                        <externalMetadataColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[TransactionID]"
+                          dataType="i4"
+                          name="TransactionID" />
+                        <externalMetadataColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[TransactionFee]"
+                          dataType="cy"
+                          name="TransactionFee" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="OLE DB Destination Error Output"
+                      synchronousInputId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source"
+                  componentClassID="Microsoft.OLEDBSource"
+                  contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+                  description="OLE DB Source"
+                  name="OLE DB Source"
+                  usesDispositions="true"
+                  version="7">
+                  <properties>
+                    <property
+                      dataType="System.Int32"
+                      description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                      name="CommandTimeout">0</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the name of the database object used to open a rowset."
+                      name="OpenRowset"></property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the variable that contains the name of the database object used to open a rowset."
+                      name="OpenRowsetVariable"></property>
+                    <property
+                      dataType="System.String"
+                      description="The SQL command to be executed."
+                      name="SqlCommand"
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT
+	ProjectBase.dbo.SIGNUPS.TransactionID, 
+	ProjectBase.dbo.SIGNUPS.TransactionFee,
+	DPeakPerformanceDM.dbo.DimMember.Member_SK,
+	DPeakPerformanceDM.dbo.DimFitnessAdvisor.Advisor_SK,
+	DPeakPerformanceDM.dbo.DimMembership.Membership_SK,
+	DPeakPerformanceDM.dbo.DimDate.PurchaseDate AS TransactionDate
+FROM 
+	ProjectBase.dbo.SIGNUPS
+INNER JOIN	
+	ProjectBase.dbo.MEBERSHIP_TYPE
+ON
+	ProjectBase.dbo.SIGNUPS.MembershipTypeID = ProjectBase.dbo.MEBERSHIP_TYPE.MembershipTypeID
+INNER JOIN
+	ProjectBase.dbo.MEMBER
+ON
+	ProjectBase.dbo.SIGNUPS.MemberID = ProjectBase.dbo.Member.MemberID
+INNER JOIN
+	ProjectBase.dbo.PERSONAL_TRAINER
+ON
+	ProjectBase.dbo.Member.TrainerID = ProjectBase.dbo.PERSONAL_TRAINER.TrainerID
+INNER JOIN
+	DPeakPerformanceDM.dbo.DImDate
+ON
+	DPeakPerformanceDM.dbo.DimDate.Date = ProjectBase.dbo.SIGNUPS.TransactionDate
+INNER JOIN
+	DPeakPerformanceDM.dbo.DimMember
+ON
+	DPeakPerformanceDM.dbo.DimMember.Member_AK = ProjectBase.dbo.MEMBER.MemberID
+INNER JOIN
+	DPeakPerformanceDM.dbo.DimFitnessAdvisor
+ON
+	DPeakPerformanceDM.dbo.DimFitnessAdvisor.Advisor_AK = ProjectBase.dbo.PERSONAL_TRAINER.TrainerID
+INNER JOIN
+	DPeakPerformanceDM.dbo.DimMembership
+ON
+	DPeakPerformanceDM.dbo.DimMembership.Membership_AK = ProjectBase.dbo.MEBERSHIP_TYPE.MembershipTypeID</property>
+                    <property
+                      dataType="System.String"
+                      description="The variable that contains the SQL command to be executed."
+                      name="SqlCommandVariable"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the column code page to use when code page information is unavailable from the data source."
+                      name="DefaultCodePage">1252</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Forces the use of the DefaultCodePage property value when describing character data."
+                      name="AlwaysUseDefaultCodePage">false</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the mode used to access the database."
+                      name="AccessMode"
+                      typeConverter="AccessMode">2</property>
+                    <property
+                      dataType="System.String"
+                      description="The mappings between the parameters in the SQL command and variables."
+                      name="ParameterMapping"></property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Connections[OleDbConnection]"
+                      connectionManagerID="Package.ConnectionManagers[OLEDB_SQL_ProjectBase]"
+                      connectionManagerRefId="Package.ConnectionManagers[OLEDB_SQL_ProjectBase]"
+                      description="The OLE DB runtime connection used to access the database."
+                      name="OleDbConnection" />
+                  </connections>
+                  <outputs>
+                    <output
+                      refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output]"
+                      name="OLE DB Source Output">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[TransactionID]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[TransactionID]"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[TransactionID]"
+                          name="TransactionID"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[TransactionFee]"
+                          dataType="cy"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[TransactionFee]"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[TransactionFee]"
+                          name="TransactionFee"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[Member_SK]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Member_SK]"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[Member_SK]"
+                          name="Member_SK"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[Membership_SK]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Membership_SK]"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[Membership_SK]"
+                          name="Membership_SK"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[Advisor_SK]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Advisor_SK]"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[Advisor_SK]"
+                          name="Advisor_SK"
+                          truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[TransactionDate]"
+                          dataType="i4"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[TransactionDate]"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].Columns[TransactionDate]"
+                          name="TransactionDate"
+                          truncationRowDisposition="FailComponent" />
+                      </outputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[TransactionID]"
+                          dataType="i4"
+                          name="TransactionID" />
+                        <externalMetadataColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[TransactionFee]"
+                          dataType="cy"
+                          name="TransactionFee" />
+                        <externalMetadataColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Member_SK]"
+                          dataType="i4"
+                          name="Member_SK" />
+                        <externalMetadataColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Membership_SK]"
+                          dataType="i4"
+                          name="Membership_SK" />
+                        <externalMetadataColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[Advisor_SK]"
+                          dataType="i4"
+                          name="Advisor_SK" />
+                        <externalMetadataColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[TransactionDate]"
+                          dataType="i4"
+                          name="TransactionDate" />
+                      </externalMetadataColumns>
+                    </output>
+                    <output
+                      refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                      isErrorOut="true"
+                      name="OLE DB Source Error Output">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[TransactionID]"
+                          dataType="i4"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[TransactionID]"
+                          name="TransactionID" />
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[TransactionFee]"
+                          dataType="cy"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[TransactionFee]"
+                          name="TransactionFee" />
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Member_SK]"
+                          dataType="i4"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Member_SK]"
+                          name="Member_SK" />
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Membership_SK]"
+                          dataType="i4"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Membership_SK]"
+                          name="Membership_SK" />
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Advisor_SK]"
+                          dataType="i4"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[Advisor_SK]"
+                          name="Advisor_SK" />
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[TransactionDate]"
+                          dataType="i4"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[TransactionDate]"
+                          name="TransactionDate" />
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+              </components>
+              <paths>
+                <path
+                  refId="Package\Load Fact Table\Load FactMembershipPurchase.Paths[OLE DB Source Output]"
+                  endId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  name="OLE DB Source Output"
+                  startId="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source.Outputs[OLE DB Source Output]" />
+              </paths>
+            </pipeline>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Prepare ETL"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{FD85B28F-B2F7-47BF-BFA1-5BB3A360B486}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Prepare ETL">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Prepare ETL\Build DM"
+          DTS:CreationName="Microsoft.ExecuteSQLTask"
+          DTS:Description="Execute SQL Task"
+          DTS:DTSID="{A66A516F-423A-4CC3-B68B-8727AA3F22B3}"
+          DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Build DM"
+          DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <SQLTask:SqlTaskData
+              SQLTask:Connection="{ED3C40DF-6DCC-4D08-9199-A5DAAA4D07F1}"
+              SQLTask:SqlStatementSource="IF NOT EXISTS(SELECT name FROM master.dbo.sysdatabases&#x9;&#x9;&#x9;&#xA;&#x9;WHERE name = N'DPeakPerformanceDM')&#xA;&#x9;&#xA;&#x9;CREATE DATABASE DPeakPerformanceDM--Created for Data Warehousing Project &#xA;--10/10/23&#xA;--&#xA;&#xA;--CrBASE DPeakPerformanceDM&#xA;GO&#xA;&#xA;USE DPeakPerformanceDM&#xA;GO&#xA;--&#xA;--Drop the tables if exist&#xA;IF EXISTS(&#xA;&#x9;SELECT *&#xA;&#x9;FROM sys.tables&#xA;&#x9;WHERE NAME = N'FactMembershipPurchase')&#xA;&#xA;&#x9;DROP TABLE FactMembershipPurchase;&#xA;--&#xA;IF EXISTS(&#xA;&#x9;SELECT *&#xA;&#x9;FROM sys.tables&#xA;&#x9;WHERE NAME = N'DimFitnessAdvisor')&#xA;&#xA;&#x9;DROP TABLE DimFitnessAdvisor;&#xA;--&#xA;IF EXISTS(&#xA;&#x9;SELECT *&#xA;&#x9;FROM sys.tables&#xA;&#x9;WHERE NAME = N'DimMembership')&#xA;&#xA;&#x9;DROP TABLE DimMembership;&#xA;-- &#xA;IF EXISTS(&#xA;&#x9;SELECT *&#xA;&#x9;FROM sys.tables&#xA;&#x9;WHERE NAME = N'DimMember')&#xA;&#xA;&#x9;DROP TABLE DimMember;&#xA;-- &#xA;IF EXISTS(&#xA;&#x9;SELECT *&#xA;&#x9;FROM sys.tables&#xA;&#x9;WHERE NAME = N'DimDate')&#xA;&#xA;&#x9;DROP TABLE DimDate;&#xA;-- &#xA;&#xA;&#xA;&#xA;&#xA;CREATE TABLE DimDate&#xA;&#x9;(&#xA;&#x9;PurchaseDate&#x9;&#x9;&#x9;&#x9;INT PRIMARY KEY, &#xA;&#x9;Date&#x9;&#x9;&#x9;&#x9;DATE,&#xA;&#x9;FullDate&#x9;&#x9;&#x9;NCHAR(10),-- Date in MM-dd-yyyy format&#xA;&#x9;DayOfMonth&#x9;&#x9;&#x9;INT, -- Field will hold day number of Month&#xA;&#x9;DayName&#x9;&#x9;&#x9;&#x9;NVARCHAR(9), -- Contains name of the day, Sunday, Monday &#xA;&#x9;DayOfWeek&#x9;&#x9;&#x9;INT,-- First Day Sunday=1 and Saturday=7&#xA;&#x9;DayOfWeekInMonth&#x9;INT, -- 1st Monday or 2nd Monday in Month&#xA;&#x9;DayOfWeekInYear&#x9;&#x9;INT,&#xA;&#x9;DayOfQuarter&#x9;&#x9;INT,&#xA;&#x9;DayOfYear&#x9;&#x9;&#x9;INT,&#xA;&#x9;WeekOfMonth&#x9;&#x9;&#x9;INT,-- Week Number of Month &#xA;&#x9;WeekOfQuarter&#x9;&#x9;INT, -- Week Number of the Quarter&#xA;&#x9;WeekOfYear&#x9;&#x9;&#x9;INT,-- Week Number of the Year&#xA;&#x9;Month&#x9;&#x9;&#x9;&#x9;INT, -- Number of the Month 1 to 12{}&#xA;&#x9;MonthName&#x9;&#x9;&#x9;NVARCHAR(9),-- January, February etc&#xA;&#x9;MonthOfQuarter&#x9;&#x9;INT,-- Month Number belongs to Quarter&#xA;&#x9;Quarter&#x9;&#x9;&#x9;&#x9;NCHAR(2),&#xA;&#x9;QuarterName&#x9;&#x9;&#x9;NVARCHAR(9),-- First,Second..&#xA;&#x9;Year&#x9;&#x9;&#x9;&#x9;INT,-- Year value of Date stored in Row&#xA;&#x9;YearName&#x9;&#x9;&#x9;CHAR(7), -- CY 2017,CY 2018&#xA;&#x9;MonthYear&#x9;&#x9;&#x9;CHAR(10), -- Jan-2018,Feb-2018&#xA;&#x9;MMYYYY&#x9;&#x9;&#x9;&#x9;INT,&#xA;&#x9;FirstDayOfMonth&#x9;&#x9;DATE,&#xA;&#x9;LastDayOfMonth&#x9;&#x9;DATE,&#xA;&#x9;FirstDayOfQuarter&#x9;DATE,&#xA;&#x9;LastDayOfQuarter&#x9;DATE,&#xA;&#x9;FirstDayOfYear&#x9;&#x9;DATE,&#xA;&#x9;LastDayOfYear&#x9;&#x9;DATE,&#xA;&#x9;IsHoliday&#x9;&#x9;&#x9;BIT,-- Flag 1=National Holiday, 0-No National Holiday&#xA;&#x9;IsWeekday&#x9;&#x9;&#x9;BIT,-- 0=Week End ,1=Week Day&#xA;&#x9;Holiday&#x9;&#x9;&#x9;&#x9;NVARCHAR(50),--Name of Holiday in US&#xA;&#x9;Season&#x9;&#x9;&#x9;&#x9;NVARCHAR(10)--Name of Season&#xA;&#x9;);&#xA;--&#xA;CREATE TABLE DimMember&#xA;&#x9;(&#xA;&#x9;Member_SK&#x9;&#x9;INT IDENTITY (1,1) NOT NULL PRIMARY KEY,&#xA;&#x9;Member_AK&#x9;&#x9;INT NOT NULL,&#xA;&#x9;MemberFirstName&#x9;NVARCHAR(100)  NOT NULL,&#xA;&#x9;MemberLastName&#x9;NVARCHAR(100) NOT NULL,&#xA;&#x9;MemberGender&#x9;&#x9;NVARCHAR(7) NOT NULL,&#xA;&#x9;MemberAge      INT NOT NULL,&#xA;&#x9;IsStudent        INT NOT NULL&#xA;&#x9;);&#xA;--&#xA;CREATE TABLE DimMembership&#xA;&#x9;(&#xA;&#x9;Membership_SK&#x9;&#x9;&#x9;INT IDENTITY(1,1) NOT NULL PRIMARY KEY,&#xA;&#x9;Membership_AK&#x9;&#x9;&#x9;INT NOT NULL,&#xA;&#x9;MembershipType&#x9;&#x9;&#x9;NVARCHAR(20) NOT NULL,&#xA;&#x9;--MembershipJoinedDate&#x9;&#x9;&#x9;&#x9;NCHAR(10) NOT NULL,-- Date in MM-dd-yyyy format&#xA;&#x9;--IsRenewal&#x9;&#x9;&#x9;INT NOT NULL&#xA;&#x9;);&#xA;--&#xA;CREATE TABLE DimFitnessAdvisor&#xA;&#x9;(&#xA;&#x9;Advisor_SK&#x9;&#x9;&#x9;INT IDENTITY(1,1) NOT NULL PRIMARY KEY,&#xA;&#x9;Advisor_AK&#x9;&#x9;&#x9;INT NOT NULL,&#xA;&#x9;AdvisorFirstName&#x9;NVARCHAR(100)  NOT NULL,&#xA;&#x9;AdvisorLastName&#x9;NVARCHAR(100) NOT NULL,&#xA;&#x9;AdvisorAge&#x9;&#x9;&#x9;INT NOT NULL,&#xA;&#x9;AdvisorGender       NVARCHAR(7) NOT NULL&#xA;&#x9;);&#xA;--&#xA;CREATE TABLE FactMembershipPurchase&#xA;&#x9;(&#xA;&#x9;Member_SK&#x9;&#x9;INT NOT NULL,&#xA;&#x9;Membership_SK&#x9;&#x9;&#x9;INT NOT NULL,&#xA;&#x9;Advisor_SK&#x9;&#x9;&#x9;INT NOT NULL,&#xA;&#x9;PurchaseDate&#x9;&#x9;&#x9;&#x9;INT NOT NULL,&#xA;&#x9;TransactionID&#x9;&#x9;&#x9;&#x9;INT NOT NULL,&#xA;&#x9;TransactionFee       MONEY NOT NULL&#xA;&#x9;CONSTRAINT pk_TransactionID PRIMARY KEY (Member_SK,Membership_SK,Advisor_Sk,PurchaseDate,TransactionID),&#xA;&#x9;CONSTRAINT fk_FactMembershipPurchase_DimDate FOREIGN KEY (PurchaseDate) REFERENCES DimDate(PurchaseDate),&#xA;&#x9;CONSTRAINT fk_FactMembershipPurchase_DimMember FOREIGN KEY (Member_SK) REFERENCES DimMember(Member_SK),&#xA;&#x9;CONSTRAINT fk_FactMembershipPurchase_DimMembership FOREIGN KEY (Membership_SK) REFERENCES DimMembership(Membership_SK),&#xA;&#x9;CONSTRAINT fk_FactMembershipPurchase_DimAdvisor FOREIGN KEY (Advisor_SK) REFERENCES DimFitnessAdvisor(Advisor_SK)&#xA;&#x9;);" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint]"
+      DTS:CreationName=""
+      DTS:DTSID="{FDB88AA5-92BA-4996-AF6A-2D8428552790}"
+      DTS:From="Package\Prepare ETL"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint"
+      DTS:To="Package\Load DM Tables" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 1]"
+      DTS:CreationName=""
+      DTS:DTSID="{35B57FD5-10BE-4790-BFA4-BB254BC491E3}"
+      DTS:From="Package\Load DM Tables"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 1"
+      DTS:To="Package\Load Fact Table" />
+  </DTS:PrecedenceConstraints>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="148.8,41.6"
+          Id="Package\Load DM Tables\Load DIM Date"
+          TopLeft="92.1142881957853,19.1663909057905" />
+        <NodeLayout
+          Size="194.4,41.6"
+          Id="Package\Load DM Tables\Load DIM FitnessAdvisor"
+          TopLeft="66.6380972857378,97.7490232899941" />
+        <NodeLayout
+          Size="165.6,41.6"
+          Id="Package\Load DM Tables\Load DIM Member"
+          TopLeft="77.1142879403368,168.211766829375" />
+        <NodeLayout
+          Size="184,41.6"
+          Id="Package\Load DM Tables\Load DIM Membership"
+          TopLeft="69.9714306758376,250.800003281762" />
+        <EdgeLayout
+          Id="Package\Load DM Tables.PrecedenceConstraints[Constraint]"
+          TopLeft="165.176192740762,60.7663909057905">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,36.9826323842036"
+              Start="0,0"
+              End="0,29.4826323842036">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,29.4826323842036" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Load DM Tables.PrecedenceConstraints[Constraint 1]"
+          TopLeft="161.876192613037,139.349023289994">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,28.8627435393812"
+              Start="0,0"
+              End="0,21.3627435393812">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,21.3627435393812" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Load DM Tables.PrecedenceConstraints[Constraint 2]"
+          TopLeft="160.942859308087,209.811766829375">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,40.988236452387"
+              Start="0,0"
+              End="0,33.488236452387">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,33.488236452387" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="308.8,358.4"
+          Size="308.8,401.6"
+          Id="Package\Load DM Tables"
+          TopLeft="53.9795927560017,277.260508090155" />
+        <NodeLayout
+          Size="224,41.6"
+          Id="Package\Load Fact Table\Load FactMembershipPurchase"
+          TopLeft="19.4775565116815,49.3378189563045" />
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="276,145.6"
+          Size="276,188.8"
+          Id="Package\Load Fact Table"
+          TopLeft="476.734701120471,384.739498004545" />
+        <NodeLayout
+          Size="120,41.6"
+          Id="Package\Prepare ETL\Build DM"
+          TopLeft="37.5714301649405,20.3058839616479" />
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="240,128"
+          Size="240,171.2"
+          Id="Package\Prepare ETL"
+          TopLeft="92.8571444384906,45.1176476915815" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="210.618368597246,216.317647691581">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60.9428603985735"
+              Start="0,0"
+              End="0,53.4428603985735">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,53.4428603985735" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 1]"
+          TopLeft="362.779592756002,478.60000304735">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="113.955108364469,0"
+              Start="0,0"
+              End="106.455108364469,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="106.455108364469,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+  <TaskHost
+    design-time-name="Package\Load DM Tables\Load DIM FitnessAdvisor">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="149.6,41.6"
+          Id="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source"
+          TopLeft="207.857146396929,35.9411769746497" />
+        <NodeLayout
+          Size="170.4,41.6"
+          Id="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination"
+          TopLeft="189.285717509231,137.647060753977" />
+        <EdgeLayout
+          Id="Package\Load DM Tables\Load DIM FitnessAdvisor.Paths[OLE DB Source Output]"
+          TopLeft="282.657146396929,77.5411769746497">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-8.17142888769803,60.1058837793278"
+              Start="0,0"
+              End="-8.17142888769803,52.6058837793278">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,26.0529418896639" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,26.0529418896639"
+                    Point2="0,30.0529418896639"
+                    Point3="-4,30.0529418896639" />
+                  <mssgle:LineSegment
+                    End="-4.17142888769803,30.0529418896639" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-4.17142888769803,30.0529418896639"
+                    Point2="-8.17142888769803,30.0529418896639"
+                    Point3="-8.17142888769803,34.0529418896639" />
+                  <mssgle:LineSegment
+                    End="-8.17142888769803,52.6058837793278" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Destination">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Load DM Tables\Load DIM FitnessAdvisor\OLE DB Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <TaskHost
+    design-time-name="Package\Load DM Tables\Load DIM Member">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="149.6,41.6"
+          Id="Package\Load DM Tables\Load DIM Member\OLE DB Source"
+          TopLeft="235.9,5.49999999999995" />
+        <NodeLayout
+          Size="164.8,41.6"
+          Id="Package\Load DM Tables\Load DIM Member\OLE DB Command"
+          TopLeft="228.3,208.7" />
+        <NodeLayout
+          Size="162.4,41.6"
+          Id="Package\Load DM Tables\Load DIM Member\Insert Destination"
+          TopLeft="5.50000000000004,208.7" />
+        <NodeLayout
+          Size="208,41.6"
+          Id="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension"
+          TopLeft="206.7,107.1" />
+        <EdgeLayout
+          Id="Package\Load DM Tables\Load DIM Member.Paths[New Output]"
+          TopLeft="277.366666666667,148.7">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-190.666666666667,60"
+              Start="0,0"
+              End="-190.666666666667,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20.2748091603053" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,20.2748091603053"
+                    Point2="0,24.2748091603053"
+                    Point3="-4,24.2748091603053" />
+                  <mssgle:LineSegment
+                    End="-186.666666666667,24.2748091603053" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-186.666666666667,24.2748091603053"
+                    Point2="-190.666666666667,24.2748091603053"
+                    Point3="-190.666666666667,28.2748091603053" />
+                  <mssgle:LineSegment
+                    End="-190.666666666667,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-122.424720052083,29.2748091603053,54.1827734375,11.43359375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Load DM Tables\Load DIM Member.Paths[Changing Attribute Updates Output]"
+          TopLeft="344.033333333333,148.7">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-33.3333333333333,60"
+              Start="0,0"
+              End="-33.3333333333333,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20.2748091603054" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,20.2748091603054"
+                    Point2="0,24.2748091603054"
+                    Point3="-4,24.2748091603054" />
+                  <mssgle:LineSegment
+                    End="-29.3333333333333,24.2748091603054" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-29.3333333333333,24.2748091603054"
+                    Point2="-33.3333333333333,24.2748091603054"
+                    Point3="-33.3333333333333,28.2748091603054" />
+                  <mssgle:LineSegment
+                    End="-33.3333333333333,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-95.2005729166667,29.2748091603054,157.0678125,11.6630859375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Load DM Tables\Load DIM Member.Paths[OLE DB Source Output]"
+          TopLeft="310.7,47.1">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Load DM Tables\Load DIM Member\OLE DB Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Load DM Tables\Load DIM Member\Slowly Changing Dimension">
+    <Properties>
+      <Property>
+        <Name>SCDMetadata</Name>
+        <Value
+          type="q2:string">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;SCDWizardMetadata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;ConnectionID&gt;{7DFB4052-2CB6-44F4-808E-60F076A2E6BA}&lt;/ConnectionID&gt;
+  &lt;TableName&gt;[dbo].[DimMember]&lt;/TableName&gt;
+  &lt;InputToColumnsCollection&gt;
+    &lt;InputColumnToDBColumn&gt;
+      &lt;IdentificationString&gt;OLE DB Source.Outputs[OLE DB Source Output].Columns[IsStudent]&lt;/IdentificationString&gt;
+      &lt;ColumnName&gt;IsStudent&lt;/ColumnName&gt;
+      &lt;KeyType&gt;None&lt;/KeyType&gt;
+      &lt;ChangeType&gt;FixedAttribute&lt;/ChangeType&gt;
+    &lt;/InputColumnToDBColumn&gt;
+    &lt;InputColumnToDBColumn&gt;
+      &lt;IdentificationString&gt;OLE DB Source.Outputs[OLE DB Source Output].Columns[Member_AK]&lt;/IdentificationString&gt;
+      &lt;ColumnName&gt;Member_AK&lt;/ColumnName&gt;
+      &lt;KeyType&gt;BusinessKey&lt;/KeyType&gt;
+      &lt;ChangeType&gt;None&lt;/ChangeType&gt;
+    &lt;/InputColumnToDBColumn&gt;
+    &lt;InputColumnToDBColumn&gt;
+      &lt;IdentificationString&gt;OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberAge]&lt;/IdentificationString&gt;
+      &lt;ColumnName&gt;MemberAge&lt;/ColumnName&gt;
+      &lt;KeyType&gt;None&lt;/KeyType&gt;
+      &lt;ChangeType&gt;FixedAttribute&lt;/ChangeType&gt;
+    &lt;/InputColumnToDBColumn&gt;
+    &lt;InputColumnToDBColumn&gt;
+      &lt;IdentificationString&gt;OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberFirstName]&lt;/IdentificationString&gt;
+      &lt;ColumnName&gt;MemberFirstName&lt;/ColumnName&gt;
+      &lt;KeyType&gt;None&lt;/KeyType&gt;
+      &lt;ChangeType&gt;FixedAttribute&lt;/ChangeType&gt;
+    &lt;/InputColumnToDBColumn&gt;
+    &lt;InputColumnToDBColumn&gt;
+      &lt;IdentificationString&gt;OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberGender]&lt;/IdentificationString&gt;
+      &lt;ColumnName&gt;MemberGender&lt;/ColumnName&gt;
+      &lt;KeyType&gt;None&lt;/KeyType&gt;
+      &lt;ChangeType&gt;FixedAttribute&lt;/ChangeType&gt;
+    &lt;/InputColumnToDBColumn&gt;
+    &lt;InputColumnToDBColumn&gt;
+      &lt;IdentificationString&gt;OLE DB Source.Outputs[OLE DB Source Output].Columns[MemberLastName]&lt;/IdentificationString&gt;
+      &lt;ColumnName&gt;MemberLastName&lt;/ColumnName&gt;
+      &lt;KeyType&gt;None&lt;/KeyType&gt;
+      &lt;ChangeType&gt;ChangingAttribute&lt;/ChangeType&gt;
+    &lt;/InputColumnToDBColumn&gt;
+  &lt;/InputToColumnsCollection&gt;
+  &lt;GeneratedComponentsIdentificationStrings&gt;
+    &lt;anyType xsi:type="xsd:string"&gt;Insert Destination&lt;/anyType&gt;
+    &lt;anyType xsi:type="xsd:string"&gt;OLE DB Command&lt;/anyType&gt;
+  &lt;/GeneratedComponentsIdentificationStrings&gt;
+  &lt;FailFixedAttribute&gt;false&lt;/FailFixedAttribute&gt;
+  &lt;FailChangeAttribute&gt;false&lt;/FailChangeAttribute&gt;
+  &lt;UseStartEndDate&gt;false&lt;/UseStartEndDate&gt;
+  &lt;CurrentIndicatorColumn /&gt;
+  &lt;InferredIndicatorColumn /&gt;
+  &lt;ValueCurrent /&gt;
+  &lt;ValueExpired /&gt;
+  &lt;StartDateColumn /&gt;
+  &lt;EndDateColumn /&gt;
+  &lt;DateVariable /&gt;
+  &lt;EnableInferredSupport&gt;false&lt;/EnableInferredSupport&gt;
+&lt;/SCDWizardMetadata&gt;</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <TaskHost
+    design-time-name="Package\Load DM Tables\Load DIM Membership">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="149.6,41.6"
+          Id="Package\Load DM Tables\Load DIM Membership\OLE DB Source"
+          TopLeft="254,52" />
+        <NodeLayout
+          Size="170.4,41.6"
+          Id="Package\Load DM Tables\Load DIM Membership\OLE DB Destination"
+          TopLeft="233,160" />
+        <EdgeLayout
+          Id="Package\Load DM Tables\Load DIM Membership.Paths[OLE DB Source Output]"
+          TopLeft="328.8,93.6">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-10.6000000000001,66.4"
+              Start="0,0"
+              End="-10.6000000000001,58.9">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,29.2" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,29.2"
+                    Point2="0,33.2"
+                    Point3="-4,33.2" />
+                  <mssgle:LineSegment
+                    End="-6.60000000000008,33.2" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-6.60000000000008,33.2"
+                    Point2="-10.6000000000001,33.2"
+                    Point3="-10.6000000000001,37.2" />
+                  <mssgle:LineSegment
+                    End="-10.6000000000001,58.9" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Load DM Tables\Load DIM Membership\OLE DB Destination">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Load DM Tables\Load DIM Membership\OLE DB Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <TaskHost
+    design-time-name="Package\Load Fact Table\Load FactMembershipPurchase">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="170.4,41.6"
+          Id="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination"
+          TopLeft="166,163" />
+        <NodeLayout
+          Size="149.6,41.6"
+          Id="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source"
+          TopLeft="217,70" />
+        <EdgeLayout
+          Id="Package\Load Fact Table\Load FactMembershipPurchase.Paths[OLE DB Source Output]"
+          TopLeft="291.8,111.6">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-40.6,51.4"
+              Start="0,0"
+              End="-40.6,43.9">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,21.7" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,21.7"
+                    Point2="0,25.7"
+                    Point3="-4,25.7" />
+                  <mssgle:LineSegment
+                    End="-36.6,25.7" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-36.6,25.7"
+                    Point2="-40.6,25.7"
+                    Point3="-40.6,29.7" />
+                  <mssgle:LineSegment
+                    End="-40.6,43.9" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Destination">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Load Fact Table\Load FactMembershipPurchase\OLE DB Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>
